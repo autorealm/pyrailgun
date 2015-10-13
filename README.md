@@ -1,3 +1,74 @@
+Python 网页爬虫工具 - PyRailgun2
+==============
+
+ > **本开源项目** 
+``Fork from`` [pyrailgun](https://github.com/princehaku/pyrailgun) 
+原作者是 [princehaku](https://github.com/princehaku) 
+并使用 ~~MIT~~ 许可协议
+
+### 新特性说明 ###
+
+1. 增强的 ``strip`` 规则配置参数。
+
+ > 进行文本提取时可过滤 HTML 标签及自动换行。 
+
+2. 新增加 ```match``` 规则配置参数。
+
+ > 用于进行 正则表达式 规则匹配，与 ```rule``` 替换使用。
+
+3. 新增加 ```extract``` 规则配置参数。
+
+ > 可进行 XPath 规则匹配，用于将相同节点存储于数组中，需要配合 ```rule``` 或 ```match``` 使用。
+
+4. 增强对重复节点分析功能。
+
+ > 对空值自动匹配，使分析得到的数组个数与重复节点数相等，可使用 ```ignore``` 参数取消。
+
+5. 更加友好的控制台输出提示。
+
+ > 方便查找错误信息。
+
+6. 可对抓取页面的连接进行控制。
+
+ > 防止网络连接或其他情况造成的某些页面抓取失败。
+
+7. 去除了 ```webkit``` 内核抓取支持及其他 BUG 修复。
+
+ > 精简除 ```requests``` / ```lxml``` / ```bs4``` 外，不需要其他依赖包。
+
+
+### 使用方法 ###
+
+可参考根目录提供的两个样例 ```zhihu``` 和 ```bangumi``` ，分别是抓取 ```知乎``` 和 ```番组计划``` 的脚本。
+
+1. 安装并配置 ```Python2.7``` 环境。
+2. 点击运行 ```zhihu.py``` 或 ```bangumi.py``` 。
+
+.. code-block:: python
+
+    from pyrailgun import RailGun
+
+    import sys, re, json
+    
+    reload(sys)
+    sys.setdefaultencoding("utf-8")
+
+    railgun = RailGun()
+    railgun.setTask(file("xxx.json"))
+    railgun.fire()
+    nodes = railgun.getShells()
+    
+    for id in nodes:
+        node = nodes[id]
+        ......
+
+--
+
+**以下是源作者的 README：** 
+
+----
+
+
 NEED Python2.7
 
 功能

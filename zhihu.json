@@ -1,0 +1,50 @@
+{
+	"action": "main",
+	"name": "vc cartoon",
+	"subaction": [
+		{
+			"action": "fetcher",
+			"url": "http://www.zhihu.com/people/evilcos/answers?order_by=created&page=${1,3}",
+			"headers" : {
+				"Cookie" : "abc=123"
+			},
+			"subaction": [
+				{
+					"action": "shell",
+					"subaction": [
+					{
+						"action": "parser",
+						"setField": "content",
+						"pos": 0,
+						"rule": ".zm-profile-section-list.profile-answer-wrap",
+						"subaction": [
+							{
+								"action": "parser",
+								"setField": "item",
+								"rule": ".zm-item",
+								"subaction": [
+								{
+									"action": "parser",
+									"setField": "title",
+									"rule": "h2",
+									"strip": "true"
+									
+								},
+								{
+									"action": "parser",
+									"setField": "desc",
+									"rule": "textarea",
+									"notnone": 1,
+									"strip": "true"
+									
+								}
+								]
+							}
+						]
+					}
+					]
+				}
+			]
+		}
+	]
+}

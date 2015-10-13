@@ -49,20 +49,22 @@ class Pattern:
         converted_strings = []
         # support ${#} as shell's Field
         if matched[0].startswith('#'):
-            key_name = matched[0][1:]
-            assert self.shell != None, "shell can't be empty when using #"
-            if self.shell.get(key_name) == None:
-                return None
-            assert len(self.shell[key_name]) <= 1, " shell 'src length is greater than 1"
+			key_name = matched[0][1:]
+			assert self.shell != None, "shell can't be empty when using #"
+			if self.shell.get(key_name) == None:
+				return None
 
-            replacedst = self.shell[key_name][0] \
-                if len(self.shell[key_name]) == 1 \
-                else ""
+			#assert len(self.shell[key_name]) <= 1, " shell 'src length is greater than 1"
 
-            try:
-            	converted_strings.append(pattern.sub(replacedst, text, 1))
-            except:
-            	pass
+			#replacedst = self.shell[key_name][0] \
+				#if len(self.shell[key_name]) == 1 \
+				#else ""
+			#print self.shell[key_name]
+			try:
+				for replacedst in self.shell[key_name]:
+					converted_strings.append(pattern.sub(replacedst, text, 1))
+			except:
+				pass
 
         # support ${@} as pyrailgun's global data sets
         if matched[0].startswith('@'):

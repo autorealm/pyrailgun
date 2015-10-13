@@ -6,7 +6,7 @@ import requests
 
 from pyrailgun.actions.action import RailGunAction
 from pyrailgun.modules.pattern import Pattern
-from pyrailgun.modules import cwebbrowser
+#from pyrailgun.modules import cwebbrowser
 
 
 class FetcherAction(RailGunAction):
@@ -15,6 +15,22 @@ class FetcherAction(RailGunAction):
         if task_entry.get("webkit", False):
             return self.__fetch_webkit(task_entry, shell_groups)
         return self.__fetch_requests(task_entry, shell_groups)
+
+    def __get_url_content(self, url, timeout, headers):
+        try:
+            response = requests.session().get(url, timeout=timeout, headers=headers)
+            if 200 != response.status_code:
+                self.logger.error("fetch " + url + " failed with code " + str(response.status_code))
+            response.encoding = 'utf-8'
+            return response.text
+        except:
+            if self.rp_count < 6:
+                self.logger.error("fetch failed "  + str(self.rp_count) + ",try again...")
+                self.rp_count = self.rp_count + 1
+                return self.__get_url_content(url, timeout, headers)
+            else:
+                self.logger.error("fetch " + url + " failed in sockets")
+                return ""
 
     # using webkit to fetch url
     def __fetch_webkit(self, task_entry, shell_groups):
@@ -63,6 +79,7 @@ class FetcherAction(RailGunAction):
         s = requests.session()
         headers = task_entry.get('headers', [])
         task_entry['datas'] = []
+        task_entry['urls'] = []
         if not urls:
             return task_entry
         for url in urls:
@@ -71,12 +88,9 @@ class FetcherAction(RailGunAction):
             if not url:
                 # do not fetch null url
                 continue
-            try:
-                response = s.get(url, timeout=timeout, headers=headers)
-                if 200 != response.status_code:
-                    self.logger.error("fetch " + url + " failed with code " + str(response.status_code))
-                data = response.text
-            except:
-                self.logger.error("fetch " + url + " failed in sockets")
+            self.rp_count = 1
+            data = self.__get_url_content(url, timeout, headers)
+            
             task_entry['datas'].append(data)
+            task_entry['urls'].append(url)
         return task_entry

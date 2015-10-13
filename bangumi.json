@@ -1,0 +1,143 @@
+{
+	"action": "main",
+	"name": "bangumi project",
+	"subaction": [
+		{
+			"action": "fetcher",
+			"url": "http://bangumi.tv/music/browser?sort=rank&page=${1,1}",
+			"headers" : {
+				"Cookie": "chii_sid=80kII7",
+				"Connection": "keep-alive",
+				"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.94 Safari/537.36"
+			},
+			"delay": 15,
+			"subaction": [
+				{
+					"action": "parser",
+					"setField": "content",
+					"pos": 0,
+					"rule": "#browserItemList",
+					"subaction": [
+						{
+							"action": "shell",
+							"group": "default",
+							"subaction": [
+								{
+									"action": "parser",
+									"setField": "item",
+									"rule": "li.item",
+									"subaction": [
+										{
+											"action": "parser",
+											"setField": "image1",
+											"pos": 0,
+											"rule": "span.image",
+											"attr": "src"
+										},
+										{
+											"action": "parser",
+											"setField": "info1",
+											"pos": 0,
+											"rule": "p.info",
+											"strip": "true"
+										},
+										{
+											"action": "parser",
+											"pos": 0,
+											"setField": "title",
+											"rule": ".inner h3 > a",
+											"strip": "true"
+										},
+										{
+											"action": "parser",
+											"pos": 0,
+											"setField": "title1",
+											"rule": ".inner h3 small",
+											"strip": "true"
+										},
+										{
+											"action": "parser",
+											"setField": "src",
+											"attr": "href",
+											"rule": ".inner h3 > a",
+											"subaction": [
+												{
+													"action": "fetcher",
+													"url": "http://bangumi.tv${#src}",
+													"subaction": [
+														{
+															"action": "parser",
+															"setField": "subject-content",
+															"pos": 0,
+															"rule": ".mainWrapper",
+															"subaction": [
+																{
+																	"action": "parser",
+																	"setField": "image",
+																	"rule": "div.infobox a.cover",
+																	"attr": "href"
+																},
+																{
+																	"action": "parser",
+																	"setField": "info",
+																	"extract": "li",
+																	"rule": "#infobox",
+																	"strip": "true"
+																},
+																{
+																	"action": "parser",
+																	"setField": "desc",
+																	"rule": "#subject_summary",
+																	"strip": "true"
+																},
+																{
+																	"action": "parser",
+																	"setField": "tags",
+																	"extract": "a",
+																	"rule": "div.subject_tag_section div.inner",
+																	"strip": "true"
+																},
+																{
+																	"action": "parser",
+																	"setField": "tracks",
+																	"extract": "li > h6 > a",
+																	"rule": "ul.line_list_music",
+																	"strip": "true"
+																},
+																{
+																	"action": "parser",
+																	"setField": "user_link",
+																	"extract": "li.user strong a",
+																	"rule": "#browserItemList",
+																	"attr": "href"
+																},
+																{
+																	"action": "parser",
+																	"setField": "user_avatar",
+																	"extract": "li.user span.userImage img",
+																	"rule": "#browserItemList",
+																	"attr": "src"
+																},
+																{
+																	"action": "parser",
+																	"setField": "user_name",
+																	"extract": "li.user strong a",
+																	"rule": "#browserItemList",
+																	"strip": "true"
+																}
+															]
+														}
+													]
+												}
+											]
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	]
+}
